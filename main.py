@@ -2,9 +2,10 @@ import pygame
 
 pygame.init()
 
-class TicTacToe:
+class Game:
 
     def __init__(self):
+
         self.screen_width = 800
         self.screen_height = 800
         self.screen = pygame.display.set_mode((self.screen_width, self.screen_height))
@@ -14,7 +15,9 @@ class TicTacToe:
         self.fps_clock = pygame.time.Clock()
         self.caption = pygame.display.set_caption('Tic-Tac-Toe')
         self.game_over = False
+        self.turn = 0
 
+        #zone creation
         self.middle_zone = Zone(280, 280)
         self.mid_left_zone = Zone(30, 280)
         self.mid_right_zone = Zone(530, 280)
@@ -25,29 +28,43 @@ class TicTacToe:
         self.bottom_mid_zone = Zone(280, 530)
         self.bottom_right_zone = Zone(530, 530)
 
-        self.zones = []
+    def check_all_collisions(self):
+
+        self.mid_left_zone.check_collision()
+        self.middle_zone.check_collision()
+        self.mid_right_zone.check_collision()
+        self.top_left_zone.check_collision()
+        self.top_mid_zone.check_collision()
+        self.top_right_zone.check_collision()
+        self.bottom_left_zone.check_collision()
+        self.bottom_mid_zone.check_collision()
+        self.bottom_right_zone.check_collision()
 
 
-        
     def main_loop(self):
          while self.running:
 
             self.screen.fill(self.screen_color)
 
-            lines = Lines()
-            
+            background = Background()
 
+            self.check_all_collisions()
 
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     self.running = False
 
-            debug()
+            #self.debug()
             pygame.display.flip()
             self.fps_clock.tick(self.fps)
 
 
-class Lines:
+
+    def debug(self):
+        print(pygame.mouse.get_pos())
+
+
+class Background:
 
     def __init__(self):
         self.width = 10
@@ -55,14 +72,14 @@ class Lines:
 
         self.start_vert_y = 35
         self.end_vert_y = 765
-        self.left_vert = pygame.draw.line(game.screen, self.color, (275, self.start_vert_y), (275, self.end_vert_y), self.width)
-        self.right_vert = pygame.draw.line(game.screen, self.color, (525, self.start_vert_y), (525, self.end_vert_y), self.width)
-
         self.start_horiz_x = 35
         self.end_horiz_x = 765
+
+        self.left_vert = pygame.draw.line(game.screen, self.color, (275, self.start_vert_y), (275, self.end_vert_y), self.width)
+        self.right_vert = pygame.draw.line(game.screen, self.color, (525, self.start_vert_y), (525, self.end_vert_y), self.width)
         self.top_horiz = pygame.draw.line(game.screen, self.color, (self.start_horiz_x, 275), (self.end_horiz_x, 275), self.width)
         self.bottom_horiz = pygame.draw.line(game.screen, self.color, (self.start_horiz_x, 525), (self.end_horiz_x, 525), self.width)
-
+ 
     def winning_lines(self):
         pass
 
@@ -75,23 +92,64 @@ class Zone:
         self.populated = False
         self.width = 240
         self.height = 240
+        self.center_x = self.x + (self.width / 2)
+        self.center_y = self.y + (self.height / 2)
         self.hitbox = pygame.Rect(self.x, self.y, self.width, self.height)
 
+    def check_collision(self):
+        for event in pygame.event.get():
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                mouse_pos = pygame.mouse.get_pos()
+                if self.hitbox.collidepoint(mouse_pos):
+                    pass
+
+
+class Figure():
+
+    def __init__(self, x, y):
+        self.x = x
+        self.y = y
+        self.radius = 100
+        self.center = (self.x, self.y)
+        self.width = 25
+
+        self.x_color = (0, 255, 224)
+        self.o_color = (255, 45, 0)
+        self.black = (0, 0, 0)
+
+    def render_x(self):
+        pygame.draw.line(game.screen, self.x_color, self.center, (self.x - 100, self.y - 100), self.width)
+        pygame.draw.line(game.screen, self.x_color, self.center, (self.x + 100, self.y - 100), self.width)
+        pygame.draw.line(game.screen, self.x_color, self.center, (self.x - 100, self.y + 100), self.width)
+        pygame.draw.line(game.screen, self.x_color, self.center, (self.x + 100, self.y + 100), self.width)
+
+    def render_o(self):
+        pygame.draw.circle(game.screen, self.o_color, self.center, self.radius)
+        pygame.draw.circle(game.screen, self.black, self.center, self.radius - 10)
+
+    def render(self):
+
+        if game.turn % 2 == 0:
+            self.render_x()
+            game.turn += 1
+        else:
+            self.render_o()
+            game.turn += 1
 
 
 
 
-def debug():
 
-    print(pygame.mouse.get_pos())
-    print(game.middle_zone.hitbox)
-    # pygame.draw.line(game.screen, 'white', (0, 0), (800, 800), 1)
-    # pygame.draw.line(game.screen, 'white', (800, 0), (0, 800), 1)
-    # pygame.draw.line(game.screen, 'white', (0, 0), (800, 800), 1)
-    # pygame.draw.line(game.screen, 'white', (400, 0), (400, 800), 1)
-    # pygame.draw.line(game.screen, 'white', (0, 400), (800, 400), 1)
+
+
+
+
+
+
+
+
 
 
 if __name__ == '__main__':
-    game = TicTacToe()
+    game = Game()
     game.main_loop()
