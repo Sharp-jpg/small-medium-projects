@@ -28,18 +28,6 @@ class Game:
         self.bottom_mid_zone = Zone(280, 530)
         self.bottom_right_zone = Zone(530, 530)
 
-    def check_all_collisions(self):
-
-        self.mid_left_zone.check_collision()
-        self.middle_zone.check_collision()
-        self.mid_right_zone.check_collision()
-        self.top_left_zone.check_collision()
-        self.top_mid_zone.check_collision()
-        self.top_right_zone.check_collision()
-        self.bottom_left_zone.check_collision()
-        self.bottom_mid_zone.check_collision()
-        self.bottom_right_zone.check_collision()
-
 
     def main_loop(self):
          while self.running:
@@ -48,7 +36,6 @@ class Game:
 
             background = Background()
 
-            self.check_all_collisions()
 
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
@@ -95,14 +82,7 @@ class Zone:
         self.center_x = self.x + (self.width / 2)
         self.center_y = self.y + (self.height / 2)
         self.hitbox = pygame.Rect(self.x, self.y, self.width, self.height)
-
-    def check_collision(self):
-        for event in pygame.event.get():
-            if event.type == pygame.MOUSEBUTTONDOWN:
-                mouse_pos = pygame.mouse.get_pos()
-                if self.hitbox.collidepoint(mouse_pos):
-                    pass
-
+        
 
 class Figure():
 
